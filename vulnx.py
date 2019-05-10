@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+# Title : VulnX
+# Author: BENSAAD Anouar
+
+
 import re
 import sys
 import os
@@ -11,6 +17,8 @@ R = '\033[91m' # red
 W = '\033[0m'  # white
 Y = '\033[93m' # yellow
 G = '\033[92m' # green
+
+# Author : BENSAAD ANOUAR
 
 now = datetime.datetime.now()
 year = now.strftime('%Y')
