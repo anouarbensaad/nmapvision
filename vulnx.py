@@ -202,9 +202,7 @@ def wp_jobmanager():
         print ('%s [%s+%s] Job Manager Plugin%s -------- %s YES' %(W,G,W,W,G))
         print ('%s [*]Shell Uploaded Successfully \n %s link : %s ' % ( B,W, dump_data ))
     else:
-        print ('%s [%s-%s] Job Manager Plugin%s ------- %s NO' %(W,R,W,W,R))    
-
-
+        print ('%s [%s-%s] Job Manager Plugin%s ------- %s NO' %(W,R,W,W,R))
 
 
 if __name__ == "__main__":
