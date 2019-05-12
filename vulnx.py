@@ -5,13 +5,15 @@
 # Desc  : CMS-Detector and Vulnerability Scanner & exploiter
 import sys
 import argparse
-import urllib
 import re
 import requests
 import os
 import datetime
 import random
 import socket
+import json 
+import urllib
+import urllib.request
 
 B = '\033[94m' #blue
 R = '\033[91m' # red
@@ -19,6 +21,7 @@ W = '\033[0m'  # white
 Y = '\033[93m' # yellow
 G = '\033[92m' # green
 
+os.system('clear')
 now = datetime.datetime.now()
 year = now.strftime('%Y')
 month= now.strftime('%m')
@@ -27,13 +30,15 @@ headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31",
             "Keep-Alive": "timeout=15"
 }
-version = "0.0.0"
 #url = "http://www.AmnPardaz.com/"
 #url = "http://www.curtiswrightoutfitters.com"
 #url = "https://www.maplatine.com"
-url = "https://www.diginov.tech"
+#url = "https://www.diginov.tech"
+#url = "https://drupalcommerce.org"
 #url = 'https://www.harvestplus.org'
-#url = 'http://www.adrianweisse.com'
+url = 'http://www.adrianweisse.com'
+#url = 'https://mediadragon.de'
+
 ################ BANNER #####################
 
 def banner():
@@ -59,6 +64,7 @@ def parse_args():
     parser._optionals.title = "OPTIONS"
     parser.add_argument('-u', '--url', help="Url scanned for", required=True)
     parser.add_argument('-f', '--file', help='Insert your file to scanning for')
+    parser.add_argument('-d', '--domain-info', help='Get Info from WEB')
     parser.add_argument('-o', '--output', help='Save the results to text file')
     return parser.parse_args()
 
@@ -82,9 +88,7 @@ def detect_cms():
         print ('%s Target[%i] -> %s \n\n '% (W,id,url))
         print ('%s [+] CMS : Wordpress%s' % (G,W))
         wp_version()
-        print ('%s [~] Scan SubDomains %s' %(Y,W))
-        print ('%s [*] IP  : %s' %(B , supdomain()))
-        print ('%s [*] SUB_DOMAIN  : %s' %(B , 'SSSER'))
+        domain_info()
         print ('%s [~] Check Vulnerability %s' %(Y,W))
         #WP_PLUGIN_EXPLOITS CALLFUNCTIONS
         wp_blaze()
@@ -100,7 +104,10 @@ def detect_cms():
         wp_powerzoomer()
         wp_revslider()
     elif drupal:
-        print ('%s[%i] %s %s CMS : Drupal \n\n' % (W,id,url,G))
+        print ('%s Target[%i] -> %s \n\n '% (W,id,url))
+        print ('%s [+] CMS : Drupal%s' % (G,W))
+        drupal_version()
+        domain_info()
         print ('%s [~] Check Vulnerability %s' %(Y,W))
     else:
         print ('%s[%i] %s %s CMS : Unknown \n\n' % (W,id,url,G))
@@ -119,35 +126,55 @@ def wp_version():
     matches = regex.findall(response.text)
     if len(matches) > 0 and matches[0] != None and matches[0] != "":
         version = matches[0]
-        return print ('%s [+] CMS Version : %s %s' %(G,version,W))
+        return print ('%s [*] WordPress Version : %s %s' %(B,version,W))
 
     else:
-        return print ('%s [!] CMS Version : %s %s' %(R,uknownversion,W))
+        return print ('%s [!] WordPress Version : %s %s' %(R,uknownversion,W))
 
-################ SCAN SUBDOMAINS #####################
+################ Drupal Version #####################
+def drupal_version():
+    headers = {
+        'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31'
+        }
+    ep = url
+    uknownversion = "UKNOWN"
+    response = requests.get(ep,headers)
+    regex = 'Drupal \d{0,10}'
+    regex = re.compile(regex)
+    matches = regex.findall(response.text)
+    if len(matches) > 0 and matches[0] != None and matches[0] != "":
+        version = matches[0]
+        return print ('%s [*] Drupal Version : %s %s' %(B,version,W))
 
-def supdomain():
+    else:
+        return print ('%s [!] Drupal Version : %s %s' %(R,uknownversion,W))
+
+
+
+################ SCAN DOMAIN INFO #####################
+
+def domain_info():
+    print ('%s [~] Domain Info %s' %(Y,W))
     http = '^http://www.'
     https= '^https://www.'
     check_http = re.findall(http,url)
-    check_https= re.findall(http,url)
-    if check_http:
-        regex = re.compile(http)
-        domain = re.sub(regex,'',url)
-        ip = socket.gethostbyname(domain)
-        return ip
-    elif check_https:
-        regex = re.compile(https)
-        domain = re.sub(regex,'',url)
-        ip = socket.gethostbyname(domain)
-        return ip
-    else:
-        return url
-
-
-    print (domain)
-    #addr = socket.gethostbyname(domain)
-    #return addr
+    check_https= re.findall(https,url)
+    try:
+        if check_http:
+            regex = re.compile(http)
+            domain = re.sub(regex,'',url)
+            ip = socket.gethostbyname(domain)
+            print ('%s [*] IP  : %s' %(B , ip))
+            print ('%s [*] DOMAIN  : %s' %(B , domain))
+        elif check_https:
+            regex = re.compile(https)
+            domain = re.sub(regex,'',url)
+            ip = socket.gethostbyname(domain)
+            print ('%s [*] IP  : %s' %(B ,ip))
+            print ('%s [*] DOMAIN  : %s' %(B , domain))
+    except Exception as e:
+        print ('%s [!] IP  : %s' %(R , e))
+        print ('%s [*] DOMAIN  : %s' %(B , url)) 
 
 ################ Blaze Plugin #####################
 
@@ -361,13 +388,6 @@ def wp_injection():
         print ('%s [*] Injected Successfully \n %s%s[*] Found ->%s %s ' % ( G,W,B,W,a ))
     else:
         print ('%s [%s-%s] Injection Content%s --------- %s FAIL' %(W,R,W,W,R))
-
-
-################ Sydney Theme ##########################
-#http://www.exploit4arab.org/exploits/2099?fbclid=IwAR0RMJ8yFtSPhTNr5Q75CmZuqSzD5nV_4kZWNKeWJfWmw0VAjefvTU92-Yg
-
-
-
 
 ################ powerzoomer Plugin #####################
 
