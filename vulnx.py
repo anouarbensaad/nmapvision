@@ -11,6 +11,7 @@ import requests
 import os
 import datetime
 import random
+import socket
 
 B = '\033[94m' #blue
 R = '\033[91m' # red
@@ -30,9 +31,9 @@ version = "0.0.0"
 #url = "http://www.AmnPardaz.com/"
 #url = "http://www.curtiswrightoutfitters.com"
 #url = "https://www.maplatine.com"
-#url = "https://www.diginov.tech/"
+url = "https://www.diginov.tech"
 #url = 'https://www.harvestplus.org'
-url = 'http://www.adrianweisse.com'
+#url = 'http://www.adrianweisse.com'
 ################ BANNER #####################
 
 def banner():
@@ -80,9 +81,9 @@ def detect_cms():
     elif wordpress:
         print ('%s Target[%i] -> %s \n\n '% (W,id,url))
         print ('%s [+] CMS : Wordpress%s' % (G,W))
-        print ('%s [+] CMS Version : %s %s' %(G,wp_version(),W))
+        wp_version()
         print ('%s [~] Scan SubDomains %s' %(Y,W))
-        print ('%s [*] IP  : %s' %(B , '192.168.1.5'))
+        print ('%s [*] IP  : %s' %(B , supdomain()))
         print ('%s [*] SUB_DOMAIN  : %s' %(B , 'SSSER'))
         print ('%s [~] Check Vulnerability %s' %(Y,W))
         #WP_PLUGIN_EXPLOITS CALLFUNCTIONS
@@ -118,9 +119,36 @@ def wp_version():
     matches = regex.findall(response.text)
     if len(matches) > 0 and matches[0] != None and matches[0] != "":
         version = matches[0]
-        return version
+        return print ('%s [+] CMS Version : %s %s' %(G,version,W))
+
     else:
-        return uknownversion
+        return print ('%s [!] CMS Version : %s %s' %(R,uknownversion,W))
+
+################ SCAN SUBDOMAINS #####################
+
+def supdomain():
+    http = '^http://www.'
+    https= '^https://www.'
+    check_http = re.findall(http,url)
+    check_https= re.findall(http,url)
+    if check_http:
+        regex = re.compile(http)
+        domain = re.sub(regex,'',url)
+        ip = socket.gethostbyname(domain)
+        return ip
+    elif check_https:
+        regex = re.compile(https)
+        domain = re.sub(regex,'',url)
+        ip = socket.gethostbyname(domain)
+        return ip
+    else:
+        return url
+
+
+    print (domain)
+    #addr = socket.gethostbyname(domain)
+    #return addr
+
 ################ Blaze Plugin #####################
 
 def wp_blaze():
